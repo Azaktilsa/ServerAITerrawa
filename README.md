@@ -62,3 +62,7 @@ gcloud run deploy --image gcr.io/terrasufa/terrawadocker:latest --platform manag
 ## Nombre para el servicio en Google Cloud Run
 
 terrawadocker
+
+## Run Server
+
+python app.py

@@ -8,11 +8,13 @@ import warnings
 import requests
 from google.cloud import storage
 import os
+from flask_cors import CORS
 
 warnings.filterwarnings(
     "ignore", message="Skipping variable loading for optimizer")
 
 app = Flask(__name__)
+CORS(app)
 
 load_dotenv()
 

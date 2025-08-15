@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AZAKTILSA IA - Optimización Acuícola</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+            position: relative;
+        }
+
+        .hero-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00c9ff, #92fe9d, #ff7eb3, #ff758c);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .logo-container {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .logo {
+            width: 280px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 6px solid #fff;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 40px;
+            font-weight: 400;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: #fff;
+            padding: 30px 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .cta-section {
+            margin-top: 50px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .circle-1 {
+            width: 80px;
+            height: 80px;
+            background: #667eea;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .circle-2 {
+            width: 120px;
+            height: 120px;
+            background: #764ba2;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .circle-3 {
+            width: 60px;
+            height: 60px;
+            background: #4CAF50;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .logo {
+                width: 200px;
+                height: 200px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .cta-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 40px;
+            position: relative;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .stats-header h3 {
+            color: #667eea;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .refresh-btn:active {
+            transform: scale(0.95);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 12px;
+            height: 12px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-indicator.offline {
+            background: #f44336;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="floating-elements">
+            <div class="floating-circle circle-1"></div>
+            <div class="floating-circle circle-2"></div>
+            <div class="floating-circle circle-3"></div>
+        </div>
+
+        <section class="hero-section">
+            <div class="logo-container">
+                <div class="logo-badge">
+                    <i class="fas fa-award"></i> IA Avanzada
+                </div>
+                <img src="/static/images/Terrawa.jpeg" alt="Terrawa - IA Acuícola" class="logo">
+            </div>
+
+            <h1>AZAKTILSA IA</h1>
+            <p class="subtitle">
+                Sistema Inteligente para la Optimización de la Alimentación del Camarón
+                <br>Maximiza la productividad de tus fincas acuícolas con tecnología de vanguardia
+            </p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="feature-title">IA Predictiva</h3>
+                    <p class="feature-description">
+                        Algoritmos avanzados de machine learning para predecir el crecimiento y optimizar la
+                        alimentación
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Análisis en Tiempo Real</h3>
+                    <p class="feature-description">
+                        Monitoreo continuo de parámetros clave para decisiones informadas y oportunas
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3 class="feature-title">Sostenibilidad</h3>
+                    <p class="feature-description">
+                        Reduce el desperdicio de alimento y optimiza los recursos para una acuicultura sostenible
+                    </p>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <div class="status-indicator" id="status-indicator" title="Estado del servidor"></div>
+                <div class="stats-header">
+                    <h3>Estadísticas en Tiempo Real</h3>
+                    <button class="refresh-btn" onclick="refreshStats()" title="Actualizar estadísticas">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number" id="total-requests">0</span>
+                        <div class="stat-label">Solicitudes Totales</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="success-rate">0%</span>
+                        <div class="stat-label">Tasa de Éxito</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="successful-requests">0</span>
+                        <div class="stat-label">Solicitudes Exitosas</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="uptime-hours">0h</span>
+                        <div class="stat-label">Tiempo Activo</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <a href="/predict" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    Realizar Predicción
+                </a>
+                <a href="/docs" class="btn btn-secondary">
+                    <i class="fas fa-book"></i>
+                    Documentación API
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Variables globales para las estadísticas
+        let currentStats = {};
+        let isServerOnline = true;
+
+        // Cargar estadísticas desde el servidor
+        async function loadStats() {
+            const statusIndicator = document.getElementById('status-indicator');
+            const refreshBtn = document.querySelector('.refresh-btn i');
+
+            try {
+                // Mostrar indicador de carga
+                refreshBtn.classList.add('fa-spin');
+
+                const response = await fetch('/stats');
+                if (response.ok) {
+                    currentStats = await response.json();
+                    updateStatsDisplay();
+                    setServerStatus(true);
+                } else {
+                    console.error('Error al cargar estadísticas:', response.status);
+                    setServerStatus(false);
+                }
+            } catch (error) {
+                console.error('Error de conexión al cargar estadísticas:', error);
+                setServerStatus(false);
+                // Mostrar datos de ejemplo si hay error
+                currentStats = {
+                    total_requests: 0,
+                    success_rate: 100.0,
+                    successful_requests: 0,
+                    uptime_hours: 0
+                };
+                updateStatsDisplay();
+            } finally {
+                // Quitar indicador de carga
+                setTimeout(() => {
+                    refreshBtn.classList.remove('fa-spin');
+                }, 500);
+            }
+        }
+
+        // Actualizar estado del servidor
+        function setServerStatus(online) {
+            const statusIndicator = document.getElementById('status-indicator');
+            isServerOnline = online;
+
+            if (online) {
+                statusIndicator.classList.remove('offline');
+                statusIndicator.title = 'Servidor en línea';
+            } else {
+                statusIndicator.classList.add('offline');
+                statusIndicator.title = 'Error de conexión con el servidor';
+            }
+        }
+
+        // Actualizar la visualización de estadísticas
+        function updateStatsDisplay() {
+            // Animar los números
+            animateNumber(document.getElementById('total-requests'), currentStats.total_requests || 0);
+            animateNumber(document.getElementById('successful-requests'), currentStats.successful_requests || 0);
+
+            // Tasa de éxito con %
+            const successRateElement = document.getElementById('success-rate');
+            animatePercentage(successRateElement, currentStats.success_rate || 100);
+
+            // Tiempo activo en horas
+            const uptimeElement = document.getElementById('uptime-hours');
+            animateNumber(uptimeElement, currentStats.uptime_hours || 0, 'h');
+        }
+
+        // Animaciones adicionales con JavaScript
+        document.addEventListener('DOMContentLoaded', function () {
+            // Cargar estadísticas iniciales
+            loadStats();
+
+            // Actualizar estadísticas cada 30 segundos
+            setInterval(loadStats, 30000);
+
+            // Animación de entrada para las cards
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.style.animation = 'fadeInUp 0.6s ease forwards';
+            });
+        });
+
+        function animateNumber(element, finalValue, suffix = '') {
+            if (!element) return;
+
+            let currentValue = 0;
+            const increment = Math.max(1, Math.ceil(finalValue / 50));
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= finalValue) {
+                    currentValue = finalValue;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(currentValue) + suffix;
+            }, 30);
+        }
+
+        function animatePercentage(element, finalValue) {
+            if (!element) return;
+
+            let currentValue = 0;
+            const increment = Math.max(0.1, finalValue / 50);
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= finalValue) {
+                    currentValue = finalValue;
+                    clearInterval(timer);
+                }
+                element.textContent = currentValue.toFixed(1) + '%';
+            }, 30);
+        }
+
+        // Función para refrescar estadísticas manualmente
+        async function refreshStats() {
+            await loadStats();
+
+            // Mostrar notificación temporal
+            if (isServerOnline) {
+                showNotification('Estadísticas actualizadas', 'success');
+            } else {
+                showNotification('Error al conectar con el servidor', 'error');
+            }
+        }
+
+        // Mostrar notificación temporal
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Animar entrada
+            setTimeout(() => notification.classList.add('show'), 100);
+
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        // CSS adicional para animaciones
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .stats-section {
+                position: relative;
+            }
+            
+            .stats-section::after {
+                content: '';
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 8px;
+                height: 8px;
+                background: #4CAF50;
+                border-radius: 50%;
+                animation: pulse 2s ease-in-out infinite;
+            }
+            
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.3; }
+            }
+            
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                font-size: 14px;
+                z-index: 1000;
+                transform: translateX(400px);
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+            
+            .notification.show {
+                transform: translateX(0);
+            }
+            
+            .notification.success {
+                background: linear-gradient(135deg, #4CAF50, #45a049);
+            }
+            
+            .notification.error {
+                background: linear-gradient(135deg, #f44336, #d32f2f);
+            }
+            
+            .notification.info {
+                background: linear-gradient(135deg, #2196F3, #1976D2);
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>

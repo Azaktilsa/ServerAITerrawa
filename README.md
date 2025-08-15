@@ -66,3 +66,7 @@ terrawadocker
 ## Run Server
 
 python app.py
+
+## Server live
+
+uvicorn main:app --reload --host 0.0.0.0 --port 8080

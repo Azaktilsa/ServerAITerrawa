@@ -1,5 +1,3 @@
-from flask import Flask, jsonify, render_template_string, request
-import json
 import numpy as np
 import joblib
 from dotenv import load_dotenv
@@ -7,16 +5,40 @@ from decouple import config
 import warnings
 import requests
 from google.cloud import storage
-import os
-from flask_cors import CORS
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+from pydantic import BaseModel
+from app.routes import router as main_router
+from app.stats import stats_manager
 
 warnings.filterwarnings(
     "ignore", message="Skipping variable loading for optimizer")
 
-app = Flask(__name__)
-CORS(app)
+app = FastAPI(
+    title="Azaktilza S.A",
+    description="Sistema CRUD con Google Cloud Storage para "
+                "Alimentación del camarón",
+    version="1.0.0"
+)
 
 load_dotenv()
+# Middleware CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Cambia por dominio real en producción
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Montar archivos estáticos
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Motor de plantillas
+templates = Jinja2Templates(directory="templates")
 
 # Rutas de los archivos (modelo y scaler por finca)
 modelos = {
@@ -67,6 +89,14 @@ rendimiento_dict = {int(row["Gramos"]): int(row["Rendimiento"])
                     for row in rendimiento_data["rows"]}
 
 
+# Modelos de datos para FastAPI
+class PredictionRequest(BaseModel):
+    finca: str
+    AnimalesM: float
+    Hectareas: float
+    Piscinas: int
+
+
 def obtener_rendimiento(gramos_predicho):
     return rendimiento_dict.get(gramos_predicho, rendimiento_dict[
         min(rendimiento_dict.keys(), key=lambda x: abs(x - gramos_predicho))])
@@ -107,62 +137,41 @@ def cargar_modelo_y_scaler(finca):
     return best_model, scaler
 
 
-@app.route('/')
-def index():
-    html_content = """
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>TERRAWA IA</title>
-        <style>
-            body {
-                text-align: center;
-                font-family: Arial, sans-serif;
-                background-color: #F3ECE7;
-                margin: 0;
-                padding: 20px;
-            }
-            h1 {
-                color: #2c3e50;
-                font-size: 24px;
-            }
-            img {
-                width: 300px;
-                height: auto;
-                margin-top: 20px;
-                border-radius: 20px; /* Bordes redondeados */
-                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Implementación de IA para la Optimización de la Alimentación del Camarón</h1>
-        <img src="{{ url_for('static', filename='images/Terrawa.jpeg') }}" alt="Terrawa">
-    </body>
-    </html>
-    """
-    return render_template_string(html_content)
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.route('/predict', methods=['POST'])
-def predict():
+@app.get("/stats")
+async def get_stats():
+    """Endpoint para obtener estadísticas de la aplicación"""
+    return stats_manager.get_all_stats()
+
+
+@app.post("/predict")
+async def predict(request: PredictionRequest):
+    # Incrementar contador de solicitudes totales
+    stats_manager.increment_total_requests()
+
     try:
-        data = request.get_json()
-
-        # Extraer los valores del JSON
-        finca = data.get('finca')
-        animales_m = data.get('AnimalesM')
-        hectareas = data.get('Hectareas')
-        piscinas = data.get('Piscinas')
+        # Extraer los valores del modelo
+        finca = request.finca
+        animales_m = request.AnimalesM
+        hectareas = request.Hectareas
+        piscinas = request.Piscinas
 
         if not all([finca, animales_m, hectareas, piscinas]):
-            return jsonify({"error": "Faltan parámetros requeridos"}), 400
+            raise HTTPException(
+                status_code=400,
+                detail="Faltan parámetros requeridos"
+            )
 
         # Verificar que la finca sea válida
         if finca not in modelos:
-            return jsonify({"error": f"Finca {finca} no válida"}), 400
+            raise HTTPException(
+                status_code=400,
+                detail=f"Finca {finca} no válida"
+            )
 
         # Cargar el modelo y el escalador para la finca especificada
         best_model, scaler = cargar_modelo_y_scaler(finca)
@@ -218,11 +227,20 @@ def predict():
             "AnimalesM": animales_m
         }
 
-        return jsonify(resultado)
+        # Incrementar contador de solicitudes exitosas
+        stats_manager.increment_successful_requests(finca)
 
+        return resultado
+
+    except HTTPException:
+        # Incrementar contador de solicitudes fallidas
+        stats_manager.increment_failed_requests()
+        raise
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # Incrementar contador de solicitudes fallidas
+        stats_manager.increment_failed_requests()
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+# Incluir otras rutas
+app.include_router(main_router)

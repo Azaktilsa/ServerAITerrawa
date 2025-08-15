@@ -1,0 +1,61 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: terrawadocker
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/execution-environment: gen2
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/cpu-throttling: "false"
+    spec:
+      serviceAccountName: terrasufa-docker-images
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      containers:
+        - image: gcr.io/terrasufa/terrawadocker:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: GCS_BUCKET_NAME
+              value: "terrawa_fincas"
+            - name: GOOGLE_CLOUD_PROJECT_ID
+              value: "terrasufa"
+            - name: EMAIL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: email-credentials
+                  key: EMAIL_USER
+            - name: EMAIL_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: email-credentials
+                  key: EMAIL_PASS
+            - name: ENVIRONMENT
+              value: "production"
+            - name: DEBUG
+              value: "false"
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /api/system/health
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/system/health
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            periodSeconds: 10

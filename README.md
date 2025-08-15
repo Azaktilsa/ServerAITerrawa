@@ -67,6 +67,17 @@ terrawadocker
 
 python app.py
 
+## Config emergencia
+
+    ´´´
+    gcloud run deploy terrawadocker \
+    --image gcr.io/terrasufa/terrawadocker:latest \
+    --platform managed \
+    --region us-central1 \
+    --allow-unauthenticated \
+    --set-env-vars GCS_BUCKET_NAME=terrawa_fincas,GOOGLE_CLOUD_PROJECT_ID=terrasufa,EMAIL_USER=terrawasuffa@gmail.com,EMAIL_PASS=kkkgpklzlxcsgddl,ENVIRONMENT=development,DEBUG=true
+    ´´´
+
 ## Server live
 
 uvicorn main:app --reload --host 0.0.0.0 --port 8080
